@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Teorema de Pitágoras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --blue-dark: #1e3a8a;
+        --blue-light: #3b82f6;
+        --yellow: #facc15;
+        --yellow-dark: #eab308;
+        --white: #ffffff;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-700: #374151;
+        --gray-900: #111827;
+        --success: #10b981;
+        --error: #ef4444;
+        --bg: #ffffff;
+        --text: #111827;
+        --card-bg: #ffffff;
+        --shadow: rgba(30, 58, 138, 0.1);
+    }
+
+    [data-theme="dark"] {
+        --bg: #0f172a;
+        --text: #f1f5f9;
+        --card-bg: #1e293b;
+        --gray-100: #1e293b;
+        --gray-200: #334155;
+        --gray-700: #cbd5e1;
+        --gray-900: #f1f5f9;
+        --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+
+    header {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-light));
+        color: var(--white);
+        padding: 2rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(250, 204, 21, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .header-content { position: relative; z-index: 1; text-align: center; }
+    h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { font-size: 1.75rem; font-weight: 300; color: var(--yellow); letter-spacing: 2px; }
+
+    .theme-toggle {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid var(--white);
+        color: var(--white);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .theme-toggle:hover {
+        background: var(--yellow);
+        color: var(--blue-dark);
+        border-color: var(--yellow);
+        transform: translateY(-2px);
+    }
+
+    section { padding: 4rem 0; }
+    section:nth-child(even) { background-color: var(--gray-100); }
+    h2 { font-size: 2rem; font-weight: 600; color: var(--blue-dark); margin-bottom: 1.5rem; text-align: center; }
+    [data-theme="dark"] h2 { color: var(--yellow); }
+    h3 { font-size: 1.25rem; font-weight: 600; color: var(--blue-dark); margin-bottom: 1rem; }
+    [data-theme="dark"] h3 { color: var(--yellow); }
+
+    .card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px var(--shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px var(--shadow);
+    }
+
+    .intro-text {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 2rem;
+        font-size: 1.125rem;
+        color: var(--gray-700);
+    }
+
+    .svg-container { display: flex; justify-content: center; align-items: center; margin: 2rem 0; }
+    #visualTriangle { max-width: 100%; height: auto; }
+    .square-area { transition: opacity 0.3s ease, filter 0.3s ease; cursor: pointer; }
+    .square-area:hover { filter: brightness(1.2); opacity: 0.9; }
+    .area-label { font-weight: 600; font-size: 14px; pointer-events: none; }
+
+    .calculator { max-width: 600px; margin: 0 auto; }
+    .input-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .input-wrapper { display: flex; flex-direction: column; }
+    label { font-weight: 500; margin-bottom: 0.5rem; color: var(--blue-dark); }
+    [data-theme="dark"] label { color: var(--yellow); }
+
+    input[type="number"] {
+        padding: 0.75rem;
+        border: 2px solid var(--gray-200);
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+        background: var(--bg);
+        color: var(--text);
+    }
+
+    input[type="number"]:focus { outline: none; border-color: var(--blue-light); }
+
+    .btn {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-light));
+        color: var(--white);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn:active { transform: translateY(0); }
+    .btn-secondary { background: var(--gray-200); color: var(--text); }
+    .btn-secondary:hover { background: var(--gray-700); color: var(--white); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); }
+
+    .result-box {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(30, 58, 138, 0.05), rgba(59, 130, 246, 0.05));
+        border-left: 4px solid var(--blue-light);
+        border-radius: 8px;
+        display: none;
+    }
+
+    [data-theme="dark"] .result-box {
+        background: linear-gradient(135deg, rgba(250, 204, 21, 0.05), rgba(59, 130, 246, 0.05));
+    }
+
+    .result-box.show { display: block; animation: slideIn 0.4s ease; }
+    .result-box.error { border-left-color: var(--error); background: rgba(239, 68, 68, 0.05); }
+    .result-box.success { border-left-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .formula-step {
+        font-family: 'Courier New', monospace;
+        font-size: 1.125rem;
+        color: var(--blue-dark);
+        margin: 0.5rem 0;
+    }
+
+    [data-theme="dark"] .formula-step { color: var(--yellow); }
+
+    .simulator-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    #simulatorCanvas {
+        border: 3px solid var(--blue-dark);
+        border-radius: 12px;
+        cursor: crosshair;
+        max-width: 100%;
+        background: var(--white);
+        touch-action: none;
+    }
+
+    [data-theme="dark"] #simulatorCanvas {
+        border-color: var(--yellow);
+        background: #0f172a;
+    }
+
+    .simulator-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .info-badge {
+        background: var(--card-bg);
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .info-badge strong {
+        display: block;
+        font-size: 1.5rem;
+        color: var(--blue-light);
+        margin-top: 0.25rem;
+    }
+
+    [data-theme="dark"] .info-badge strong { color: var(--yellow); }
+
+    .quiz-container { max-width: 700px; margin: 0 auto; }
+    .question-card { display: none; }
+    .question-card.active { display: block; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .question-title { font-size: 1.25rem; margin-bottom: 1.5rem; }
+
+    .option {
+        background: var(--bg);
+        border: 2px solid var(--gray-200);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .option:hover { border-color: var(--blue-light); background: rgba(59, 130, 246, 0.05); }
+    .option.selected { border-color: var(--blue-light); background: rgba(59, 130, 246, 0.1); }
+    .option.correct { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
+    .option.incorrect { border-color: var(--error); background: rgba(239, 68, 68, 0.1); }
+
+    .explanation {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(250, 204, 21, 0.1);
+        border-radius: 8px;
+        display: none;
+    }
+
+    .explanation.show { display: block; }
+    .quiz-nav { display: flex; gap: 1rem; margin-top: 1.5rem; }
+    .quiz-nav .btn { flex: 1; }
+
+    .apps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .app-card { text-align: center; }
+
+    .app-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem;
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-light));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .app-icon svg {
+        width: 40px;
+        height: 40px;
+        stroke: var(--white);
+        stroke-width: 2;
+        fill: none;
+    }
+
+    .mini-calc {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 2px solid var(--gray-200);
+    }
+
+    .mini-calc input { width: 100%; margin-bottom: 0.5rem; }
+    .mini-result { margin-top: 0.5rem; font-weight: 600; color: var(--blue-light); }
+    [data-theme="dark"] .mini-result { color: var(--yellow); }
+
+    footer {
+        background: var(--blue-dark);
+        color: var(--white);
+        text-align: center;
+        padding: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 1.875rem; }
+        .subtitle { font-size: 1.25rem; }
+        h2 { font-size: 1.5rem; }
+        section { padding: 2.5rem 0; }
+        .theme-toggle { top: 1rem; right: 1rem; padding: 0.4rem 0.8rem; font-size: 0.875rem; }
+        .input-group { grid-template-columns: 1fr; }
+        .apps-grid { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+    <header>
+        <button class="theme-toggle" id="themeToggle">Modo Oscuro</button>
+        <div class="container">
+            <div class="header-content">
+                <h1>El Teorema de Pitágoras</h1>
+                <p class="subtitle">a² + b² = c²</p>
+            </div>
+        </div>
+    </header>
+
+    <section>
+        <div class="container">
+            <h2>¿Qué es el Teorema de Pitágoras?</h2>
+            <p class="intro-text">
+                En un triángulo rectángulo, el cuadrado de la hipotenusa es igual a la suma de los cuadrados de los catetos. 
+                Es decir, si construimos un cuadrado sobre cada lado, el área del cuadrado grande es igual a la suma de las áreas de los dos cuadrados pequeños.
+            </p>
+            <div class="card">
+                <div class="svg-container">
+                    <svg id="visualTriangle" width="500" height="400" viewBox="0 0 500 400">
+                        <g class="square-area" id="squareC">
+                            <rect x="250" y="50" width="200" height="200" fill="#1e3a8a" opacity="0.3" stroke="#1e3a8a" stroke-width="2"/>
+                            <text x="350" y="145" text-anchor="middle" class="area-label" fill="#1e3a8a">c² = 25</text>
+                        </g>
+                        <g class="square-area" id="squareA">
+                            <rect x="50" y="250" width="120" height="120" fill="#facc15" opacity="0.4" stroke="#eab308" stroke-width="2"/>
+                            <text x="110" y="315" text-anchor="middle" class="area-label" fill="#92400e">a² = 9</text>
+                        </g>
+                        <g class="square-area" id="squareB">
+                            <rect x="170" y="250" width="160" height="160" fill="#3b82f6" opacity="0.3" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="250" y="335" text-anchor="middle" class="area-label" fill="#1e3a8a">b² = 16</text>
+                        </g>
+                        <polygon points="170,250 170,130 290,250" fill="none" stroke="#111827" stroke-width="3"/>
+                        <text x="155" y="195" text-anchor="end" font-weight="600" fill="#92400e">a = 3</text>
+                        <text x="230" y="265" text-anchor="middle" font-weight="600" fill="#1e3a8a">b = 4</text>
+                        <text x="240" y="185" text-anchor="middle" font-weight="600" fill="#1e3a8a" transform="rotate(-53 240 185)">c = 5</text>
+                        <path d="M 170 230 L 190 230 L 190 250" fill="none" stroke="#111827" stroke-width="2"/>
+                    </svg>
+                </div>
+                <p style="text-align: center; color: var(--gray-700); margin-top: 1rem;">
+                    Pasa el mouse sobre cada cuadrado para ver su área. Observa: 9 + 16 = 25
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Calculadora de Pitágoras</h2>
+            <div class="card calculator">
+                <p style="margin-bottom: 1.5rem; color: var(--gray-700);">
+                    Ingresa dos valores conocidos y calcularemos el tercero. El lado "c" siempre es la hipotenusa.
+                </p>
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <label for="sideA">Cateto a</label>
+                        <input type="number" id="sideA" placeholder="Ej: 3" min="0" step="any">
+                    </div>
+                    <div class="input-wrapper">
+                        <label for="sideB">Cateto b</label>
+                        <input type="number" id="sideB" placeholder="Ej: 4" min="0" step="any">
+                    </div>
+                    <div class="input-wrapper">
+                        <label for="sideC">Hipotenusa c</label>
+                        <input type="number" id="sideC" placeholder="Ej: 5" min="0" step="any">
+                    </div>
+                </div>
+                <button class="btn" id="calculateBtn">Calcular</button>
+                <div class="result-box" id="resultBox"></div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Simulador Interactivo</h2>
+            <p class="intro-text">
+                Arrastra el vértice rojo del ángulo recto para cambiar el tamaño del triángulo. 
+                Observa cómo a² + b² siempre es igual a c².
+            </p>
+            <div class="card">
+                <div class="simulator-container">
+                    <canvas id="simulatorCanvas" width="600" height="400"></canvas>
+                    <div class="simulator-info">
+                        <div class="info-badge"><span>Cateto a</span><strong id="simA">0</strong></div>
+                        <div class="info-badge"><span>Cateto b</span><strong id="simB">0</strong></div>
+                        <div class="info-badge"><span>Hipotenusa c</span><strong id="simC">0</strong></div>
+                        <div class="info-badge"><span>a² + b²</span><strong id="simSum">0</strong></div>
+                        <div class="info-badge"><span>c²</span><strong id="simC2">0</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Pon a Prueba tu Conocimiento</h2>
+            <div class="card quiz-container">
+                <div class="question-card active" data-question="1">
+                    <h3 class="question-title">Pregunta 1: Si un triángulo rectángulo tiene catetos de 6 y 8, ¿cuánto mide la hipotenusa?</h3>
+                    <div class="option" data-value="10">a) 10</div>
+                    <div class="option" data-value="14">b) 14</div>
+                    <div class="option" data-value="12">c) 12</div>
+                    <div class="option" data-value="9">d) 9</div>
+                    <div class="explanation">Correcto. c = √(6² + 8²) = √(36 + 64) = √100 = 10</div>
+                </div>
+                <div class="question-card" data-question="2">
+                    <h3 class="question-title">Pregunta 2: En un triángulo rectángulo, si la hipotenusa mide 13 y un cateto mide 5, ¿cuánto mide el otro cateto?</h3>
+                    <div class="option" data-value="12">a) 12</div>
+                    <div class="option" data-value="8">b) 8</div>
+                    <div class="option" data-value="10">c) 10</div>
+                    <div class="option" data-value="7">d) 7</div>
+                    <div class="explanation">Correcto. b = √(13² - 5²) = √(169 - 25) = √144 = 12</div>
+                </div>
+                <div class="question-card" data-question="3">
+                    <h3 class="question-title">Pregunta 3: ¿Cuál de estos tríos de números NO forma un triángulo rectángulo?</h3>
+                    <div class="option" data-value="3,4,5">a) 3, 4, 5</div>
+                    <div class="option" data-value="5,12,13">b) 5, 12, 13</div>
+                    <div class="option" data-value="2,3,4">c) 2, 3, 4</div>
+                    <div class="option" data-value="8,15,17">d) 8, 15, 17</div>
+                    <div class="explanation">Correcto. 2² + 3² = 4 + 9 = 13, pero 4² = 16. Como 13 ≠ 16, no es triángulo rectángulo.</div>
+                </div>
+                <div class="quiz-nav">
+                    <button class="btn btn-secondary" id="resetQuiz">Reiniciar quiz</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Aplicaciones en la Vida Real</h2>
+            <div class="apps-grid">
+                <div class="card app-card">
+                    <div class="app-icon">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                    </div>
+                    <h3>Diagonal de una TV</h3>
+                    <p>Las TVs se miden por su diagonal. Si conoces el ancho y alto, puedes calcular las pulgadas.</p>
+                    <div class="mini-calc">
+                        <input type="number" id="tvWidth" placeholder="Ancho en cm" min="0">
+                        <input type="number" id="tvHeight" placeholder="Alto en cm" min="0">
+                        <button class="btn" onclick="calcTV()">Calcular diagonal</button>
+                        <div class="mini-result" id="tvResult"></div>
+                    </div>
+                </div>
+                <div class="card app-card">
+                    <div class="app-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"></circle><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"></path></svg>
+                    </div>
+                    <h3>Distancia en un Mapa</h3>
+                    <p>Para ir del punto A al B, calculas la distancia directa usando coordenadas X e Y.</p>
+                    <div class="mini-calc">
+                        <input type="number" id="distX" placeholder="Distancia horizontal" min="0">
+                        <input type="number" id="distY" placeholder="Distancia vertical" min="0">
+                        <button class="btn" onclick="calcDistance()">Calcular distancia</button>
+                        <div class="mini-result" id="distResult"></div>
+                    </div>
+                </div>
+                <div class="card app-card">
+                    <div class="app-icon">
+                        <svg viewBox="0 0 24 24"><polygon points="3 3 21 3 3 21 3 3"></polygon></svg>
+                    </div>
+                    <h3>Longitud de una Rampa</h3>
+                    <p>Para construir rampas accesibles, calculas qué tan larga debe ser según la altura y base.</p>
+                    <div class="mini-calc">
+                        <input type="number" id="rampHeight" placeholder="Altura en metros" min="0">
+                        <input type="number" id="rampBase" placeholder="Base en metros" min="0">
+                        <button class="btn" onclick="calcRamp()">Calcular largo</button>
+                        <div class="mini-result" id="rampResult"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>Hecho con ❤ para aprender matemáticas</p>
+        </div>
+    </footer>
+
+<script>
+    // MODO OSCURO / CLARO
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    body.setAttribute('data-theme', savedTheme);
+    updateThemeButton(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeButton(newTheme);
+    });
+
+    function updateThemeButton(theme) {
+        themeToggle.textContent = theme === 'light' ? 'Modo Oscuro' : 'Modo Claro';
+    }
+
+    // CALCULADORA
+    const sideA = document.getElementById('sideA');
+    const sideB = document.getElementById('sideB');
+    const sideC = document.getElementById('sideC');
+    const calculateBtn = document.getElementById('calculateBtn');
+    const resultBox = document.getElementById('resultBox');
+
+    calculateBtn.addEventListener('click', calculatePythagoras);
+
+    function calculatePythagoras() {
+        const a = parseFloat(sideA.value);
+        const b = parseFloat(sideB.value);
+        const c = parseFloat(sideC.value);
+        const values = [a, b, c].filter(v => !isNaN(v) && v > 0);
+        resultBox.className = 'result-box show';
+        
+        if (values.length < 2) {
+            resultBox.classList.add('error');
+            resultBox.innerHTML = '<strong>Error:</strong> Necesitas ingresar al menos 2 valores para calcular.';
+            return;
+        }
+
+        if (!isNaN(a) && !isNaN(b) && !isNaN(c)) {
+            const a2b2 = (a * a + b * b).toFixed(2);
+            const c2 = (c * c).toFixed(2);
+            if (Math.abs(a2b2 - c2) < 0.01) {
+                resultBox.classList.add('success');
+                resultBox.innerHTML = `<strong>Correcto:</strong> Es un triángulo rectángulo válido.<div class="formula-step">${a}² + ${b}² = ${c}²</div><div class="formula-step">${a2b2} = ${c2}</div>`;
+            } else {
+                resultBox.classList.add('error');
+                resultBox.innerHTML = `<strong>Error:</strong> No es un triángulo rectángulo.<div class="formula-step">${a}² + ${b}² = ${a2b2}</div><div class="formula-step">Pero ${c}² = ${c2}</div><div class="formula-step">${a2b2} ≠ ${c2}</div>`;
+            }
+            return;
+        }
+
+        resultBox.classList.add('success');
+        if (isNaN(c)) {
+            const result = Math.sqrt(a * a + b * b);
+            resultBox.innerHTML = `<strong>Resultado:</strong> La hipotenusa c = ${result.toFixed(2)}<div class="formula-step">c = √(${a}² + ${b}²)</div><div class="formula-step">c = √(${(a*a).toFixed(2)} + ${(b*b).toFixed(2)})</div><div class="formula-step">c = √${(a*a + b*b).toFixed(2)} = ${result.toFixed(2)}</div>`;
+        } else if (isNaN(a)) {
+            if (c <= b) {
+                resultBox.classList.add('error');
+                resultBox.innerHTML = '<strong>Error:</strong> La hipotenusa debe ser mayor que el cateto.';
+                return;
+            }
+            const result = Math.sqrt(c * c - b * b);
+            resultBox.innerHTML = `<strong>Resultado:</strong> El cateto a = ${result.toFixed(2)}<div class="formula-step">a = √(${c}² - ${b}²)</div><div class="formula-step">a = √(${(c*c).toFixed(2)} - ${(b*b).toFixed(2)})</div><div class="formula-step">a = √${(c*c - b*b).toFixed(2)} = ${result.toFixed(2)}</div>`;
+        } else if (isNaN(b)) {
+            if (c <= a) {
+                resultBox.classList.add('error');
+                resultBox.innerHTML = '<strong>Error:</strong> La hipotenusa debe ser mayor que el cateto.';
+                return;
+            }
+            const result = Math.sqrt(c * c - a * a);
+            resultBox.innerHTML = `<strong>Resultado:</strong> El cateto b = ${result.toFixed(2)}<div class="formula-step">b = √(${c}² - ${a}²)</div><div class="formula-step">b = √(${(c*c).toFixed(2)} - ${(a*a).toFixed(2)})</div><div class="formula-step">b = √${(c*c - a*a).toFixed(2)} = ${result.toFixed(2)}</div>`;
+        }
+    }
+
+    // SIMULADOR ARRASTRABLE
+    const canvas = document.getElementById('simulatorCanvas');
+    const ctx = canvas.getContext('2d');
+    const originX = 100;
+    const originY = 300;
+    const fixedX = 450;
+    let dragPoint = { x: 100, y: 150 };
+    let isDragging = false;
+
+    function resizeCanvas() {
+        const container = canvas.parentElement;
+        const maxWidth = Math.min(600, container.clientWidth - 40);
+        canvas.style.width = maxWidth + 'px';
+        canvas.style.height = (maxWidth * 0.67) + 'px';
+    }
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function drawSimulator() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const a = Math.abs(dragPoint.y - originY) / 10;
+        const b = Math.abs(fixedX - originX) / 10;
+        const c = Math.sqrt(a * a + b * b);
+        
+        ctx.fillStyle = 'rgba(250, 204, 21, 0.3)';
+        ctx.strokeStyle = '#eab308';
+        ctx.lineWidth = 2;
+        const squareA = Math.abs(dragPoint.y - originY);
+        ctx.fillRect(originX - squareA, Math.min(dragPoint.y, originY), squareA, squareA);
+        ctx.strokeRect(originX - squareA, Math.min(dragPoint.y, originY), squareA, squareA);
+        
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+        ctx.strokeStyle = '#3b82f6';
+        const squareB = Math.abs(fixedX - originX);
+        ctx.fillRect(originX, originY, squareB, squareB);
+        ctx.strokeRect(originX, originY, squareB, squareB);
+        
+        ctx.fillStyle = 'rgba(30, 58, 138, 0.3)';
+        ctx.strokeStyle = '#1e3a8a';
+        const dx = fixedX - originX;
+        const dy = dragPoint.y - originY;
+        const angle = Math.atan2(dy, dx);
+        
+        ctx.save();
+        ctx.translate(originX, dragPoint.y);
+        ctx.rotate(angle - Math.PI / 2);
+        const squareC = Math.sqrt(dx * dx + dy * dy);
+        ctx.fillRect(0, -squareC, squareC, squareC);
+        ctx.strokeRect(0, -squareC, squareC, squareC);
+        ctx.restore();
+        
+        ctx.beginPath();
+        ctx.moveTo(originX, originY);
+        ctx.lineTo(fixedX, originY);
+        ctx.lineTo(originX, dragPoint.y);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.fill();
+        ctx.strokeStyle = '#111827';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.arc(originX, dragPoint.y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.moveTo(originX, originY - 15);
+        ctx.lineTo(originX + 15, originY - 15);
+        ctx.lineTo(originX + 15, originY);
+        ctx.strokeStyle = '#111827';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        document.getElementById('simA').textContent = a.toFixed(1);
+        document.getElementById('simB').textContent = b.toFixed(1);
+        document.getElementById('simC').textContent = c.toFixed(2);
+        document.getElementById('simSum').textContent = (a*a + b*b).toFixed(2);
+        document.getElementById('simC2').textContent = (c*c).toFixed(2);
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+        const dist =
